@@ -159,7 +159,12 @@ void ofApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+	for (int i = 0; i < dragInfo.files.size(); i++) {
+		cout << dragInfo.files[i] << endl;
+		if (!shadertoy.load(dragInfo.files[i])) {
+			ofLogError() << "Error loading shader: " <<  dragInfo.files[i];
+		}
+	}
 }
 
 //--------------------------------------------------------------
