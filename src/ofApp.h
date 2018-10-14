@@ -12,7 +12,7 @@ private:
     ofxShadertoy shadertoy;
     ofTexture inputImage;
     ofTexture noiseImage;
-	
+	bool useCamera;
 
 	// gif
 	void onGifSaved(string & fileName);

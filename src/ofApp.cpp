@@ -24,9 +24,10 @@ void ofApp::setup(){
     shadertoy.setAdvanceTime(true);
     gui.setup();
     gui.add(effectStrength.setup("effect strength", 0.5, 0.0, 1.0));
+	useCamera = false;
 	// gif
-	frameW = 320;
-	frameH = 240;
+	frameW = 120;
+	frameH = 68;
 
 	vid.initGrabber(frameW, frameH);
 	rgbaFbo.allocate(frameW, frameH, GL_RGB);
@@ -90,6 +91,15 @@ void ofApp::captureFrame() {
 void ofApp::keyPressed(int key){
     if (key == 'f') {
         ofToggleFullscreen();
+    }
+	if (key == 'c') {
+		useCamera = !useCamera;
+		if (useCamera) {
+			shadertoy.setTexture(0, vid.getTexture());
+		}
+		else {
+			shadertoy.setTexture(0, inputImage);
+		}
     }
 }
 //--------------------------------------------------------------
