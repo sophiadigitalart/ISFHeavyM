@@ -10,7 +10,7 @@ void ofApp::setup(){
     // textures in GLSL are flipped vertically, so we need to flip them back up
     // to use with Shadertoy shaders - most images are preset to use VFlip there
     // this has the same effect of setting VFlip on the texture in Shadertoy
-	image.mirror(true, false);
+	image.mirror(false, false);
 	inputImage.allocate(image.getPixelsRef());
     // this is the same as setting Wrap to "repeat" in Shadertoy
 	inputImage.setTextureWrap(GL_REPEAT, GL_REPEAT);
@@ -29,7 +29,8 @@ void ofApp::setup(){
 	frameH = 240;
 
 	vid.initGrabber(frameW, frameH);
-	rgbaFbo.allocate(frameW, frameH, GL_RGBA);
+	rgbaFbo.allocate(frameW, frameH, GL_RGB);
+
 	gifEncoder.setup(frameW, frameH, .25, 256);
 	ofAddListener(ofxGifEncoder::OFX_GIF_SAVE_FINISHED, this, &ofApp::onGifSaved);
 
@@ -45,10 +46,10 @@ void ofApp::update(){
 void ofApp::draw(){
 	rgbaFbo.begin();
 	ofClear(0, 0, 0, 1);
-    shadertoy.setDimensions(ofGetWindowWidth(), ofGetWindowHeight());
+    shadertoy.setDimensions(frameW, frameH);
     shadertoy.begin();
     shadertoy.setUniform1f("effectStrength", effectStrength);
-    ofDrawRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+    ofDrawRectangle(0, 0, frameW, frameH);
     shadertoy.end();
 	rgbaFbo.end();
 	rgbaFbo.draw(460, 400);
@@ -73,15 +74,10 @@ void ofApp::captureFrame() {
 		vid.getPixelsRef().getBitsPerPixel(),
 		.1f
 	); */
-	ofPixels pix;
-	rgbaFbo.getTextureReference().readToPixels(pix);
-	gifEncoder.addFramePx(
-		&pix,
-		vid.getWidth(),
-		vid.getHeight(),
-		vid.getPixelsRef().getBitsPerPixel(),
-		.1f
-	);
+	ofPixels fboPixels;
+	rgbaFbo.readToPixels(fboPixels);
+	gifEncoder.addFrame(fboPixels.getPixels(), frameW, frameH);
+	
 	//gifEncoder.addFrame(fbo.)
 	ofTexture * tx = new ofTexture();
 	tx->allocate(frameW, frameH, GL_RGB);
