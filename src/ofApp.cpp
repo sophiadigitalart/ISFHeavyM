@@ -53,28 +53,20 @@ void ofApp::draw(){
     ofDrawRectangle(0, 0, frameW, frameH);
     shadertoy.end();
 	rgbaFbo.end();
-	rgbaFbo.draw(460, 400);
+	rgbaFbo.draw(460, 200);
     gui.draw();
 
 	for (int i = 0; i < nFrames; i++) {
 		txs[i]->draw(i* (frameW / 2 + 5), frameH, frameW / 2, frameH / 2);
 	}
-	vid.draw(0, 0);
+	vid.draw(0, 400);
 	ofEnableAlphaBlending();
 	ofDisableAlphaBlending();
 	ofDrawBitmapString("KEYS\n----\nspacebar: capture frame\ns: save gif", frameW + 10, 20);
 }
-void ofApp::onGifSaved(string &fileName) {
-	cout << "gif saved as " << fileName << endl;
-}
+
 void ofApp::captureFrame() {
-	/* gifEncoder.addFramePx(
-		&vid.getPixels(),
-		vid.getWidth(),
-		vid.getHeight(),
-		vid.getPixelsRef().getBitsPerPixel(),
-		.1f
-	); */
+
 	ofPixels fboPixels;
 	rgbaFbo.readToPixels(fboPixels);
 	gifEncoder.addFrame(fboPixels.getPixels(), frameW, frameH);
@@ -87,12 +79,49 @@ void ofApp::captureFrame() {
 
 	nFrames++;
 }
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+	string ext = "";
+	string fileName = "";
+	for (int i = 0; i < dragInfo.files.size(); i++) {
+		cout << dragInfo.files[i] << endl;
+
+		string absolutePath = dragInfo.files[i];
+		// use the last of the dropped files
+		int dotIndex = absolutePath.find_last_of(".");
+		int slashIndex = absolutePath.find_last_of("\\");
+
+		if (dotIndex != std::string::npos && dotIndex > slashIndex) {
+			ext = absolutePath.substr(dotIndex + 1);
+			fileName = absolutePath.substr( slashIndex + 1, dotIndex - slashIndex - 1);
+			if (ext == "frag") {
+				// shadertoy want mainImage()
+				if (!shadertoy.load(dragInfo.files[i])) {
+					ofLogError() << "Error loading shader: " << dragInfo.files[i];
+				}
+
+			}
+			else if (ext == "glsl") {
+				// glsl has main()
+				//loadString(loadFile(absolutePath));
+				//loadFragmentShader(absolutePath, index);
+			}
+		}
+	}
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key == 'f') {
+}
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key){
+	switch (key) {
+	case 'f':
         ofToggleFullscreen();
-    }
-	if (key == 'c') {
+		break;
+	case 'c':
 		useCamera = !useCamera;
 		if (useCamera) {
 			shadertoy.setTexture(0, vid.getTexture());
@@ -100,11 +129,7 @@ void ofApp::keyPressed(int key){
 		else {
 			shadertoy.setTexture(0, inputImage);
 		}
-    }
-}
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-	switch (key) {
+		break;
 	case ' ':
 		captureFrame();
 		break;
@@ -115,6 +140,12 @@ void ofApp::keyReleased(int key){
 	default:
 		break;
 	}
+}
+void ofApp::onGifSaved(string & fileName) {
+	cout << "gif saved as " << fileName << endl;
+	ofLogNotice("onGifSaved: " + fileName);
+	gifEncoder.reset();
+	ofLogNotice("onGifSaved reset");
 }
 
 //--------------------------------------------------------------
@@ -157,15 +188,6 @@ void ofApp::gotMessage(ofMessage msg){
 
 }
 
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-	for (int i = 0; i < dragInfo.files.size(); i++) {
-		cout << dragInfo.files[i] << endl;
-		if (!shadertoy.load(dragInfo.files[i])) {
-			ofLogError() << "Error loading shader: " <<  dragInfo.files[i];
-		}
-	}
-}
 
 //--------------------------------------------------------------
 void ofApp::exit() {
