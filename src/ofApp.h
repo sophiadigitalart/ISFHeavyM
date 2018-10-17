@@ -4,6 +4,7 @@
 #include "ofxShadertoy.h"
 #include "ofxGui.h"
 #include "ofxGifEncoder.h"
+#include "ofxISF.h"
 
 class ofApp : public ofBaseApp{
 private:
@@ -19,7 +20,6 @@ private:
 	void									captureFrame();
 
 	vector <ofTexture *>					txs; // for previewing
-	vector <ofxGifEncoder::ofxGifFrame *>	pxs;
 
 	int										frameW, frameH;
 	int										nFrames;
@@ -27,6 +27,8 @@ private:
 	ofVideoGrabber							vid;
 	ofxGifEncoder							gifEncoder;
 	void									onGifSaved(string & fileName);
+	// isf
+	ofxISF::Chain							chain;
 public:
 	void 									setup();
 	void 									update();

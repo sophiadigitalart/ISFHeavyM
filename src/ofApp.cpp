@@ -36,11 +36,15 @@ void ofApp::setup(){
 	ofAddListener(ofxGifEncoder::OFX_GIF_SAVE_FINISHED, this, &ofApp::onGifSaved);
 
 	ofBackground(50, 40, 50);
+	// isf
+	chain.setup(frameW, frameH);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	vid.update();
+	chain.update();
+	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
 //--------------------------------------------------------------
@@ -54,14 +58,14 @@ void ofApp::draw(){
     shadertoy.end();
 	rgbaFbo.end();
 	rgbaFbo.draw(460, 200);
+	chain.draw(200, 100);
     gui.draw();
 
 	for (int i = 0; i < nFrames; i++) {
 		txs[i]->draw(i* (frameW / 2 + 5), frameH, frameW / 2, frameH / 2);
 	}
 	vid.draw(0, 400);
-	ofEnableAlphaBlending();
-	ofDisableAlphaBlending();
+
 	ofDrawBitmapString("KEYS\n----\nspacebar: capture frame\ns: save gif", frameW + 10, 20);
 }
 
@@ -102,10 +106,12 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 				}
 
 			}
-			else if (ext == "glsl") {
-				// glsl has main()
-				//loadString(loadFile(absolutePath));
-				//loadFragmentShader(absolutePath, index);
+			else if (ext == "fs") {
+				if (i == 0) {
+					chain.load(dragInfo.files[i]);
+					chain.setEnable(0, false);
+
+				}
 			}
 		}
 	}
