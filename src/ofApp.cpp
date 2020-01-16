@@ -22,8 +22,8 @@ void ofApp::setup(){
     shadertoy.setTexture(1, noiseImage);
     ofSetFrameRate(60);
     shadertoy.setAdvanceTime(true);
-    gui.setup();
-    gui.add(effectStrength.setup("effect strength", 0.5, 0.0, 1.0));
+    //gui.setup();
+    //gui.add(effectStrength.setup("effect strength", 0.5, 0.0, 1.0));
 	useCamera = false;
 	// gif
 	frameW = 120;
@@ -53,13 +53,13 @@ void ofApp::draw(){
 	ofClear(0, 0, 0, 1);
     shadertoy.setDimensions(frameW, frameH);
     shadertoy.begin();
-    shadertoy.setUniform1f("effectStrength", effectStrength);
+	shadertoy.setUniform1f("effectStrength", 0.5f);// effectStrength);
     ofDrawRectangle(0, 0, frameW, frameH);
     shadertoy.end();
 	rgbaFbo.end();
 	rgbaFbo.draw(460, 200);
 	chain.draw(200, 100);
-    gui.draw();
+    //gui.draw();
 
 	for (int i = 0; i < nFrames; i++) {
 		txs[i]->draw(i* (frameW / 2 + 5), frameH, frameW / 2, frameH / 2);

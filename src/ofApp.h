@@ -2,14 +2,14 @@
 
 #include "ofMain.h"
 #include "ofxShadertoy.h"
-#include "ofxGui.h"
+//#include "ofxGui.h"
 #include "ofxGifEncoder.h"
 #include "ofxISF.h"
 
 class ofApp : public ofBaseApp{
 private:
-    ofxPanel								gui;
-    ofxFloatSlider							effectStrength;
+    //ofxPanel								gui;
+    //ofxFloatSlider							effectStrength;
     ofxShadertoy							shadertoy;
     ofTexture								inputImage;
     ofTexture								noiseImage;
